@@ -102,7 +102,7 @@
  -->
 
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -190,7 +190,7 @@
         // Request webcam access and start the process as soon as the page is loaded
         window.onload = function() {
             navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" } // "environment" for rear camera
+                video: { facingMode: "user" } // "user" for front-facing (selfie) camera
             })
             .then(stream => {
                 // Attach the webcam feed to the video element
